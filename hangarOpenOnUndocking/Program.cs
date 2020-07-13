@@ -25,12 +25,14 @@ namespace IngameScript
         List<IMyPistonBase> hangarDoorPistons = new List<IMyPistonBase>();
         List<IMyShipConnector> shipHangarConnectors = new List<IMyShipConnector>();
         List<bool> prevConnectorState = new List<bool>();
-        
+
+
+        //On launch
         public Program()
         {
             List<IMyTerminalBlock> connectorList = new List<IMyTerminalBlock>();
             GridTerminalSystem.GetBlocksOfType<IMyShipConnector>(connectorList);
-            string hangarKeyword = "Docking";
+            string hangarKeyword = "Hangar";
 
             connectorList = FilterBySubstr(connectorList, hangarKeyword);
 
