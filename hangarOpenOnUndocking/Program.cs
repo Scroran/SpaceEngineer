@@ -33,17 +33,19 @@ namespace IngameScript
             List<IMyTerminalBlock> connectorList = new List<IMyTerminalBlock>();
             GridTerminalSystem.GetBlocksOfType<IMyShipConnector>(connectorList);
             string hangarKeyword = "Hangar";
+            if (connectorList.Count == 0) throw new System.ArgumentException("No Connector detected at all...", "original"); ;
 
             connectorList = FilterBySubstr(connectorList, hangarKeyword);
+            if (connectorList.Count == 0) throw new System.ArgumentException("No Connector with tag *Hangar*", "original"); ;
 
             foreach (IMyShipConnector connector in connectorList)
             {
                 shipHangarConnectors.Add(connector);
                 prevConnectorState.Add(connector.Status.Equals(MyShipConnectorStatus.Connected));
             }
-
-            prevIsDocked = isDocked = shipHangarConnectors[0].Status.Equals(MyShipConnectorStatus.Connected);
-
+            if (shipHangarConnectors.Count != 0)
+                prevIsDocked = isDocked = shipHangarConnectors[0].Status.Equals(MyShipConnectorStatus.Connected);
+            else prevIsDocked = isDocked = false;
             List<IMyTerminalBlock> pistonList = new List<IMyTerminalBlock>();
             GridTerminalSystem.GetBlocksOfType<IMyPistonBase>(pistonList);
 
@@ -61,7 +63,7 @@ namespace IngameScript
  
         public void Main(string argument, UpdateType updateSource)
         {
-            if (IsAnyShipUndocking())
+            if (IsAnyShipUndocking() && hangarDoorPistons.Count != 0)
             { 
                 switch (hangarDoorPistons[0].Status)
                 {
@@ -86,7 +88,7 @@ namespace IngameScript
             for (int i = 0; i< shipHangarConnectors.Count; i++)
             {
                 checkedConnectorConnected = shipHangarConnectors[i].Status.Equals(MyShipConnectorStatus.Connected);
-                if (prevConnectorState[i] != checkedConnectorConnected )
+                if (prevConnectorState[i] != checkedConnectorConnected && !checkedConnectorConnected)
                 {
                     AShipIsUndocking = true;
                 }
@@ -97,12 +99,14 @@ namespace IngameScript
 
         private List<IMyTerminalBlock> FilterBySubstr(List<IMyTerminalBlock> blockList, string subs)
         {
+
             List<IMyTerminalBlock> filteredList = new List<IMyTerminalBlock>();
             foreach (IMyTerminalBlock block in blockList)
             {
-                if (block.Name.Contains(subs))
+                if (block.DisplayNameText.Contains(subs))
                 {
                     filteredList.Add(block);
+
                 }
             }
             return filteredList;
