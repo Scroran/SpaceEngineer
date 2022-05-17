@@ -353,3 +353,5 @@ MigrationBackup/
 .ionide/
 
 hangarOpenOnUndocking_Backup_2020-04-22-172859979.zip
+*.pub
+*.png
